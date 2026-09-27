@@ -1,20 +1,271 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UQ受付トレーナー</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UQ受付トレーナー</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #222;
+  color: white;
+  font-size: 16px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.option {
+  background: #eee;
+  color: #333;
+}
+
+.result {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.good {
+  color: green;
+}
+
+.bad {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>📱 UQ受付トレーナー</h1>
+<div class="container">
 
+<h1>📱 UQ受付トレーナー</h1>
+
+<div id="start" class="card">
   <h2>料金見積もりトレーニング</h2>
 
-  <p>お客様の情報を確認して、正しい見積もりを作成しましょう。</p>
+  <p>
+    お客様へのヒアリングを行い、正しい見積もりを作成しましょう。
+  </p>
 
-  <button>トレーニング開始</button>
+  <button onclick="startTraining()">
+    トレーニング開始
+  </button>
+</div>
+
+<div id="questionArea" class="card hidden">
+
+  <p id="progress"></p>
+
+  <h2 id="question"></h2>
+
+  <div id="options"></div>
+
+</div>
+
+<div id="resultArea" class="card hidden">
+
+  <div class="result" id="result"></div>
+
+  <p id="detail"></p>
+
+  <button onclick="location.reload()">
+    もう一度挑戦
+  </button>
+
+</div>
+
+</div>
+
+<script>
+
+let currentQuestion = 0;
+let score = 0;
+
+const questions = [
+
+  {
+    question: "現在利用している携帯会社は？",
+    options: [
+      "au",
+      "UQ mobile",
+      "ドコモ",
+      "ソフトバンク"
+    ],
+    answer: "ドコモ"
+  },
+
+  {
+    question: "毎月のデータ使用量は？",
+    options: [
+      "1GB未満",
+      "3GB程度",
+      "15GB程度",
+      "50GB以上"
+    ],
+    answer: "15GB程度"
+  },
+
+  {
+    question: "自宅のインターネットについて確認しましたか？",
+    options: [
+      "確認した",
+      "確認していない"
+    ],
+    answer: "確認した"
+  },
+
+  {
+    question: "家族の携帯電話利用状況を確認しましたか？",
+    options: [
+      "確認した",
+      "確認していない"
+    ],
+    answer: "確認した"
+  },
+
+  {
+    question: "このお客様への最初の提案で重要なのは？",
+    options: [
+      "いきなり一番安いプランを案内する",
+      "ヒアリングした内容を整理してから提案する",
+      "とにかくキャンペーンを説明する",
+      "端末変更を先にすすめる"
+    ],
+    answer: "ヒアリングした内容を整理してから提案する"
+  }
+
+];
+
+function startTraining() {
+
+  document.getElementById("start").classList.add("hidden");
+
+  document.getElementById("questionArea").classList.remove("hidden");
+
+  showQuestion();
+
+}
+
+function showQuestion() {
+
+  const q = questions[currentQuestion];
+
+  document.getElementById("progress").innerText =
+    "問題 " + (currentQuestion + 1) + " / " + questions.length;
+
+  document.getElementById("question").innerText =
+    q.question;
+
+  const options =
+    document.getElementById("options");
+
+  options.innerHTML = "";
+
+  q.options.forEach(function(option) {
+
+    const button =
+      document.createElement("button");
+
+    button.innerText = option;
+
+    button.classList.add("option");
+
+    button.onclick = function() {
+
+      checkAnswer(option);
+
+    };
+
+    options.appendChild(button);
+
+  });
+
+}
+
+function checkAnswer(selected) {
+
+  const correct =
+    questions[currentQuestion].answer;
+
+  if(selected === correct) {
+
+    score++;
+
+  }
+
+  currentQuestion++;
+
+  if(currentQuestion < questions.length) {
+
+    showQuestion();
+
+  } else {
+
+    showResult();
+
+  }
+
+}
+
+function showResult() {
+
+  document.getElementById("questionArea")
+    .classList.add("hidden");
+
+  document.getElementById("resultArea")
+    .classList.remove("hidden");
+
+  const percent =
+    Math.round(score / questions.length * 100);
+
+  document.getElementById("result").innerText =
+    "🏆 " + percent + "点";
+
+  document.getElementById("detail").innerText =
+    "正解：" + score +
+    " / " + questions.length +
+    "問";
+
+}
+
+</script>
 
 </body>
 </html>
